@@ -3,130 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tajik Pro: Max 700</title>
+    <title>Tajik Pro: Game Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0F0F1A; --surf: #1A1A2E; --prim: #FFB74D; --text: #E0E0E0; --green: #4CAF50; --red: #FF5252; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        header { padding: 15px; background: var(--surf); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--prim); z-index: 10; }
-        .xp-badge { color: var(--prim); font-weight: bold; font-size: 1.1rem; }
+        header { padding: 12px 15px; background: var(--surf); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--prim); z-index: 10; }
+        .stats-top { display: flex; gap: 15px; font-weight: bold; }
+        .lives { color: var(--red); font-size: 1.1rem; }
+        .xp-badge { color: var(--prim); }
 
         main { flex: 1; overflow-y: auto; position: relative; }
         .page { display: none; padding: 20px; min-height: 100%; }
         .page.active { display: block; }
 
-        .card { background: var(--surf); padding: 20px; border-radius: 15px; margin-bottom: 12px; border-left: 4px solid var(--prim); cursor: pointer; }
-        .game-display { height: 160px; background: var(--surf); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,183,77,0.2); }
+        .card { background: var(--surf); padding: 18px; border-radius: 15px; margin-bottom: 12px; border-left: 4px solid var(--prim); }
+        .game-display { height: 160px; background: var(--surf); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,183,77,0.1); position: relative; }
         
+        /* Combo Badge */
+        .combo-tag { position: absolute; top: 10px; right: 10px; background: var(--prim); color: #000; padding: 4px 8px; border-radius: 5px; font-weight: 900; font-size: 0.8rem; display: none; }
+
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-opt { background: var(--surf); border: 1px solid var(--prim); color: white; padding: 20px 5px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
-        .btn-yes { border-color: var(--green); color: var(--green); }
-        .btn-no { border-color: var(--red); color: var(--red); }
+        .btn-opt { background: var(--surf); border: 1.5px solid var(--prim); color: white; padding: 18px 5px; border-radius: 12px; font-weight: 600; }
         
-        .drop-zone { min-height: 80px; background: rgba(255,255,255,0.03); border: 2px dashed var(--prim); border-radius: 12px; padding: 10px; margin: 15px 0; display: flex; flex-wrap: wrap; gap: 6px; }
-        .word-chip { background: var(--prim); color: #000; padding: 10px 14px; border-radius: 8px; font-weight: bold; }
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15,15,26,0.98); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:1000; padding:30px; }
+        .res-val { font-size: 1.8rem; color: var(--prim); margin: 5px 0 20px 0; font-weight: 800; }
 
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:1000; padding:20px; }
-
-        nav { background: var(--surf); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .nav-btn { opacity: 0.5; font-size: 0.8rem; text-align: center; flex: 1; cursor: pointer; }
+        nav { background: var(--surf); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .nav-btn { opacity: 0.4; font-size: 0.75rem; text-align: center; flex: 1; }
         .nav-btn.active { opacity: 1; color: var(--prim); }
         
-        .main-action { width: 100%; padding: 18px; background: var(--prim); border: none; border-radius: 12px; font-weight: 800; color: #000; margin-top: 15px; }
+        .main-action { width: 100%; padding: 16px; background: var(--prim); border: none; border-radius: 12px; font-weight: 800; color: #000; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div id="u-display">👤 <span id="u-name">...</span></div>
-    <div class="xp-badge">⭐ <span id="u-xp">0</span></div>
+    <div class="stats-top">
+        <span class="lives" id="u-lives">❤️❤️❤️</span>
+        <span class="xp-badge">⭐ <span id="u-xp">0</span></span>
+    </div>
+    <div style="font-size: 0.9rem; opacity: 0.8;" id="u-name">Загрузка...</div>
 </header>
 
 <div id="res-modal" class="modal">
-    <h1 style="color:var(--prim); font-size:2.5rem;">НАТИҶА!</h1>
-    <p id="res-text" style="font-size:1.5rem; margin:20px 0;"></p>
+    <h2 id="res-title" style="color:var(--red);">БОЗӢ ТАМОМ!</h2>
+    <div style="margin-top:20px; opacity:0.7;">БА ДАСТ ОВАРДЕД:</div>
+    <div id="res-xp" class="res-val">+0 XP</div>
+    <div style="opacity:0.7;">МАКС. КОМБО:</div>
+    <div id="res-combo" class="res-val">x1</div>
     <button class="main-action" onclick="App.nav('p-home')">БА АСОСӢ</button>
 </div>
 
 <main>
     <section id="p-home" class="page active">
-        <h2 style="margin-bottom: 15px;">Меню</h2>
-        <div class="card" onclick="App.game.sprint.start()">
+        <div style="background:var(--surf); padding:15px; border-radius:12px; margin-bottom:20px; text-align:center; border:1px solid var(--prim);">
+            <div style="font-size:0.8rem; opacity:0.6;">КАЛИМАИ РӮЗ</div>
+            <div id="daily-word" style="font-size:1.4rem; font-weight:bold; color:var(--prim); margin-top:5px;">Об - Вода</div>
+        </div>
+        
+        <div class="card" onclick="App.startGame('sprint')">
             <h3>⚡ Спринт</h3>
-            <p style="opacity: 0.6;">30 секунд на всё!</p>
+            <p style="opacity:0.6; font-size:0.8rem;">Тез бош! 30 сония ва 3 ҳаёт.</p>
         </div>
-        <div class="card" onclick="App.game.duels.start()">
-            <h3>⚔️ Дуэли</h3>
-            <p style="opacity: 0.6;">700+ слов</p>
+        <div class="card" onclick="App.startGame('duels')">
+            <h3>⚔️ Дуэли калимаҳо</h3>
+            <p style="opacity:0.6; font-size:0.8rem;">Тарҷумаи дурустро ёбед.</p>
         </div>
-        <div class="card" onclick="App.game.build.start()">
-            <h3>🧱 Фразы</h3>
-            <p style="opacity: 0.6;">Сборщик предложений</p>
+        <div class="card" onclick="App.startGame('build')">
+            <h3>🧱 Созандаи ҷумла</h3>
+            <p style="opacity:0.6; font-size:0.8rem;">Ҷумлаҳоро дуруст созед.</p>
         </div>
     </section>
 
     <section id="g-sprint" class="page">
-        <div id="spr-time" style="text-align:center; font-size:1.5rem; color:var(--prim); font-weight:bold;">30s</div>
+        <div id="spr-time" style="text-align:center; color:var(--prim); font-weight:bold; margin-bottom:10px;">30s</div>
         <div class="game-display">
+            <div id="combo-anim" class="combo-tag">x2 COMBO</div>
             <div id="spr-q" style="font-size:2.2rem; font-weight:bold;">...</div>
-            <div id="spr-a" style="opacity:0.7; margin-top:10px;">...</div>
+            <div id="spr-a" style="opacity:0.7; font-size:1.3rem; margin-top:10px;">...</div>
         </div>
         <div class="grid-2">
-            <button class="btn-opt btn-no" onclick="App.game.sprint.check(false)">НЕВЕРНО</button>
-            <button class="btn-opt btn-yes" onclick="App.game.sprint.check(true)">ВЕРНО</button>
+            <button class="btn-opt" style="border-color:var(--red); color:var(--red);" onclick="App.game.sprint.check(false)">НЕВЕРНО</button>
+            <button class="btn-opt" style="border-color:var(--green); color:var(--green);" onclick="App.game.sprint.check(true)">ВЕРНО</button>
         </div>
     </section>
 
     <section id="g-duels" class="page">
-        <div id="duel-q" class="game-display">...</div>
+        <div class="game-display">
+            <div id="combo-duel" class="combo-tag">x2</div>
+            <div id="duel-q" style="font-size:2rem; font-weight:bold;">...</div>
+        </div>
         <div id="duel-opts" class="grid-2"></div>
     </section>
 
     <section id="g-build" class="page">
-        <h4 id="build-task" style="text-align:center; margin-bottom:10px;"></h4>
+        <div id="build-task" style="text-align:center; margin-bottom:10px; min-height:1.2rem;"></div>
         <div id="build-target" class="drop-zone"></div>
         <div id="build-pool" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
         <button class="main-action" onclick="App.game.build.check()">ПРОВЕРИТЬ</button>
     </section>
 
     <section id="p-rank" class="page">
-        <h2 style="margin-bottom:20px;">Рейтинг</h2>
+        <h2 style="margin-bottom:15px;">Пешсафон</h2>
         <div id="rank-list"></div>
     </section>
 </main>
 
 <nav>
-    <div class="nav-btn active" id="n-home" onclick="App.nav('p-home')">🏠<br>Меню</div>
+    <div class="nav-btn active" id="n-home" onclick="App.nav('p-home')">🏠<br>Асосӣ</div>
     <div class="nav-btn" id="n-rank" onclick="App.nav('p-rank')">🏆<br>Рейтинг</div>
 </nav>
 
 <script>
 const App = {
     tg: window.Telegram.WebApp,
-    xp: parseInt(localStorage.getItem('xp_final_v4')) || 0,
+    xp: parseInt(localStorage.getItem('xp_v5')) || 0,
+    lives: 3,
+    currentCombo: 0,
+    maxCombo: 0,
+    sessionXP: 0,
     
     db: {
+        // СЮДА ТЫ ДОБАВИШЬ СВОИ 700 СЛОВ
         words: [
-            {q:'Нон', a:'Хлеб'}, {q:'Об', a:'Вода'}, {q:'Китоб', a:'Книга'}, {q:'Хона', a:'Дом'},
-            {q:'Шаҳр', a:'Город'}, {q:'Дӯст', a:'Друг'}, {q:'Осмон', a:'Небо'}, {q:'Офтоб', a:'Солнце'},
-            {q:'Мактаб', a:'Школа'}, {q:'Дарахт', a:'Дерево'}, {q:'Зиндагӣ', a:'Жизнь'}, {q:'Вақт', a:'Время'},
-            {q:'Кор', a:'Работа'}, {q:'Даст', a:'Рука'}, {q:'Чашм', a:'Глаз'}, {q:'Дил', a:'Сердце'},
-            {q:'Замин', a:'Земля'}, {q:'Модар', a:'Мать'}, {q:'Падар', a:'Отец'}, {q:'Бародар', a:'Брат'},
-            {q:'Хоҳар', a:'Сестра'}, {q:'Шаб', a:'Ночь'}, {q:'Рӯз', a:'День'}, {q:'Ранг', a:'Цвет'},
-            {q:'Калон', a:'Большой'}, {q:'Хурд', a:'Маленький'}, {q:'Зебо', a:'Красивый'}, {q:'Гарм', a:'Горячий'},
-            {q:'Хунук', a:'Холодный'}, {q:'Тоза', a:'Чистый'}, {q:'Нав', a:'Новый'}, {q:'Кӯҳна', a:'Старый'},
-            {q:'Ширин', a:'Сладкий'}, {q:'Талх', a:'Горький'}, {q:'Сафед', a:'Белый'}, {q:'Сиёҳ', a:'Черный'}
-            // База расширяема до 700+
+            {q:'Нон', a:'Хлеб'}, {q:'Об', a:'Вода'}, {q:'Осмон', a:'Небо'}, {q:'Хона', a:'Дом'},
+            {q:'Китоб', a:'Книга'}, {q:'Дӯст', a:'Друг'}, {q:'Шаҳр', a:'Город'}, {q:'Дарахт', a:'Дерево'},
+            {q:'Модар', a:'Мать'}, {q:'Падар', a:'Отец'}, {q:'Бародар', a:'Брат'}, {q:'Хоҳар', a:'Сестра'}
         ],
         phrases: [
-            {ru:'Как тебя зовут?', tg:['Номи', 'шумо', 'чист?']},
-            {ru:'Я иду домой', tg:['Ман', 'ба', 'хона', 'меравам']},
-            {ru:'Я тебя люблю', tg:['Ман', 'шуморо', 'дӯст', 'медорам']},
-            {ru:'Сколько времени?', tg:['Соат', 'чанд', 'шуд?']}
-        ],
-        bots: [{n:'Davron', x:3500}, {n:'Malika', x:2900}, {n:'Umed', x:2400}]
+            {ru:'Как дела?', tg:['Аҳволи', 'шумо', 'чист?']},
+            {ru:'Я иду домой', tg:['Ман', 'ба', 'хона', 'меравам']}
+        ]
     },
 
     init() {
@@ -134,59 +144,97 @@ const App = {
         this.tg.expand();
         document.getElementById('u-name').innerText = this.tg.initDataUnsafe?.user?.first_name || "Меҳмон";
         this.updateXP(0);
+        this.setDailyWord();
+        
         this.tg.BackButton.onClick(() => {
-            if(App.game.sprint.timer) clearInterval(App.game.sprint.timer);
-            App.nav('p-home');
+            if(confirm("Выйти из игры? Прогресс раунда будет потерян.")) {
+                this.endGame();
+            }
         });
+    },
+
+    setDailyWord() {
+        const w = this.db.words[Math.floor(Math.random()*this.db.words.length)];
+        document.getElementById('daily-word').innerText = `${w.q} - ${w.a}`;
     },
 
     nav(id) {
         document.getElementById('res-modal').style.display = 'none';
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        
-        if(id === 'p-home') {
-            document.getElementById('n-home').classList.add('active');
-            this.tg.BackButton.hide();
-        } else if(id === 'p-rank') {
-            document.getElementById('n-rank').classList.add('active');
-            this.tg.BackButton.show();
-            this.renderRank();
-        } else { this.tg.BackButton.show(); }
+        this.tg.BackButton[id === 'p-home' ? 'hide' : 'show']();
+        if(id === 'p-rank') this.renderRank();
     },
 
     updateXP(v) {
         this.xp += v;
-        localStorage.setItem('xp_final_v4', this.xp);
+        localStorage.setItem('xp_v5', this.xp);
         document.getElementById('u-xp').innerText = this.xp;
     },
 
-    renderRank() {
-        const list = document.getElementById('rank-list');
-        list.innerHTML = '';
-        const all = [...this.db.bots, {n:'Я', x:this.xp, isMe:true}].sort((a,b)=>b.x-a.x);
-        all.forEach((l, i) => {
-            const div = document.createElement('div');
-            div.className = 'rank-item';
-            if(l.isMe) div.style.border = '1px solid var(--prim)';
-            div.innerHTML = `<span>${i+1}. ${l.n}</span><b>${l.x} XP</b>`;
-            list.appendChild(div);
-        });
+    updateLives(delta) {
+        this.lives += delta;
+        let s = "";
+        for(let i=0; i<3; i++) s += i < this.lives ? "❤️" : "🖤";
+        document.getElementById('u-lives').innerText = s;
+        if(this.lives <= 0) this.endGame();
+    },
+
+    startGame(type) {
+        this.lives = 3;
+        this.sessionXP = 0;
+        this.currentCombo = 0;
+        this.maxCombo = 0;
+        this.updateLives(0);
+        this.nav('g-' + type);
+        this.game[type].start();
+    },
+
+    endGame() {
+        if(this.game.sprint.timer) clearInterval(this.game.sprint.timer);
+        document.getElementById('res-xp').innerText = `+${this.sessionXP} XP`;
+        document.getElementById('res-combo').innerText = `x${this.maxCombo}`;
+        document.getElementById('res-modal').style.display = 'flex';
+        this.tg.HapticFeedback.notificationOccurred('warning');
+    },
+
+    handleAnswer(isCorrect, xpBase) {
+        if(isCorrect) {
+            this.currentCombo++;
+            if(this.currentCombo > this.maxCombo) this.maxCombo = this.currentCombo;
+            
+            // Расчет бонуса комбо: x1, x1.5, x2 и т.д.
+            let bonus = Math.floor(xpBase * (1 + (this.currentCombo * 0.1)));
+            this.sessionXP += bonus;
+            this.updateXP(bonus);
+            this.tg.HapticFeedback.impactOccurred('light');
+            
+            // Показ плашки комбо
+            const tags = document.querySelectorAll('.combo-tag');
+            tags.forEach(t => {
+                if(this.currentCombo > 1) {
+                    t.innerText = `x${this.currentCombo} COMBO`;
+                    t.style.display = 'block';
+                }
+            });
+        } else {
+            this.currentCombo = 0;
+            document.querySelectorAll('.combo-tag').forEach(t => t.style.display = 'none');
+            this.updateLives(-1);
+            this.tg.HapticFeedback.notificationOccurred('error');
+        }
     },
 
     game: {
         sprint: {
-            timeLeft: 30, timer: null, curCorrect: false, score: 0,
+            timeLeft: 30, timer: null, curCorrect: false,
             start() {
-                this.timeLeft = 30; this.score = 0;
-                App.nav('g-sprint');
+                this.timeLeft = 30;
                 this.next();
-                if(this.timer) clearInterval(this.timer);
                 this.timer = setInterval(() => {
                     this.timeLeft--;
                     document.getElementById('spr-time').innerText = this.timeLeft + 's';
-                    if(this.timeLeft <= 0) this.end();
+                    if(this.timeLeft <= 0) App.endGame();
                 }, 1000);
             },
             next() {
@@ -198,29 +246,17 @@ const App = {
                     this.curCorrect = true;
                 } else {
                     let randA = App.db.words[Math.floor(Math.random()*App.db.words.length)].a;
-                    while(randA === word.a) randA = App.db.words[Math.floor(Math.random()*App.db.words.length)].a;
                     document.getElementById('spr-a').innerText = randA;
                     this.curCorrect = false;
                 }
             },
             check(ans) {
-                if(ans === this.curCorrect) { 
-                    this.score += 20; 
-                    App.updateXP(20); 
-                    App.tg.HapticFeedback.impactOccurred('light'); 
-                } else { 
-                    App.tg.HapticFeedback.notificationOccurred('error'); 
-                }
-                this.next();
-            },
-            end() {
-                clearInterval(this.timer);
-                document.getElementById('res-text').innerText = `Шумо ${this.score} XP ба даст овардед!`;
-                document.getElementById('res-modal').style.display = 'flex';
+                App.handleAnswer(ans === this.curCorrect, 15);
+                if(App.lives > 0) this.next();
             }
         },
         duels: {
-            start() { App.nav('g-duels'); this.next(); },
+            start() { this.next(); },
             next() {
                 const cur = App.db.words[Math.floor(Math.random()*App.db.words.length)];
                 document.getElementById('duel-q').innerText = cur.q;
@@ -236,8 +272,8 @@ const App = {
                     const b = document.createElement('button');
                     b.className = 'btn-opt'; b.innerText = o;
                     b.onclick = () => {
-                        if(o === cur.a) { App.updateXP(10); App.tg.HapticFeedback.impactOccurred('medium'); this.next(); }
-                        else { App.tg.HapticFeedback.notificationOccurred('error'); b.style.borderColor = 'red'; }
+                        App.handleAnswer(o === cur.a, 10);
+                        if(App.lives > 0) this.next();
                     };
                     cont.appendChild(b);
                 });
@@ -245,7 +281,7 @@ const App = {
         },
         build: {
             idx:0, chosen:[],
-            start() { this.idx = Math.floor(Math.random()*App.db.phrases.length); this.chosen=[]; App.nav('g-build'); this.render(); },
+            start() { this.idx = Math.floor(Math.random()*App.db.phrases.length); this.chosen=[]; this.render(); },
             render() {
                 const data = App.db.phrases[this.idx];
                 document.getElementById('build-task').innerText = data.ru;
@@ -261,9 +297,9 @@ const App = {
                 pool.innerHTML = '';
                 let remain = [...data.tg];
                 this.chosen.forEach(cw => { let p = remain.indexOf(cw); if(p>-1) remain.splice(p,1); });
-                remain.sort(()=>Math.random()-0.5).forEach(w => {
+                remain.forEach(w => {
                     const c = document.createElement('div');
-                    c.className = 'word-chip'; style="background:var(--surf); border:1px solid var(--prim); color:white;";
+                    c.className = 'word-chip'; c.style.background = "var(--surf)"; c.style.color = "white";
                     c.innerText = w;
                     c.onclick = () => { this.chosen.push(w); this.render(); };
                     pool.appendChild(c);
@@ -271,20 +307,9 @@ const App = {
             },
             check() {
                 const data = App.db.phrases[this.idx];
-                if(this.chosen.join(' ') === data.tg.join(' ')) {
-                    App.updateXP(40); App.tg.HapticFeedback.notificationOccurred('success'); this.start();
-                } else { App.tg.HapticFeedback.notificationOccurred('warning'); }
+                const win = this.chosen.join(' ') === data.tg.join(' ');
+                App.handleAnswer(win, 40);
+                if(win) this.start();
             }
         }
-    }
-};
-
-// Запуск приложения
-try {
-    App.init();
-} catch(e) {
-    alert("Ошибка загрузки: " + e);
-}
-</script>
-</body>
-</html>
+    
