@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tajik Pro: Ultra 500</title>
+    <title>Tajik Pro: Ultra Max</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0F0F1A; --surf: #1A1A2E; --prim: #FFB74D; --text: #E0E0E0; --green: #4CAF50; --red: #FF5252; }
@@ -15,28 +15,32 @@
 
         main { flex: 1; overflow-y: auto; position: relative; }
         .page { display: none; padding: 20px; min-height: 100%; }
-        .page.active { display: block; animation: fadeIn 0.2s ease-out; }
+        .page.active { display: block; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .card { background: var(--surf); padding: 20px; border-radius: 15px; margin-bottom: 12px; border-left: 4px solid var(--prim); cursor: pointer; }
-        .game-display { height: 160px; background: var(--surf); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,183,77,0.2); transition: 0.3s; }
+        .game-display { height: 160px; background: var(--surf); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,183,77,0.2); }
+        .word-main { font-size: 2.2rem; font-weight: bold; margin-bottom: 10px; }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-opt { background: var(--surf); border: 1px solid var(--prim); color: white; padding: 18px 5px; border-radius: 12px; font-size: 0.95rem; transition: 0.2s; }
-        .btn-opt:active { background: var(--prim); color: #000; }
+        .btn-opt { background: var(--surf); border: 1px solid var(--prim); color: white; padding: 20px 5px; border-radius: 12px; font-size: 1.1rem; }
+        .btn-yes { border-color: var(--green); color: var(--green); }
+        .btn-no { border-color: var(--red); color: var(--red); }
         
-        .drop-zone { min-height: 80px; background: rgba(255,255,255,0.03); border: 2px dashed var(--prim); border-radius: 12px; padding: 10px; margin: 15px 0; display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; }
-        .word-chip { background: var(--prim); color: #000; padding: 10px 14px; border-radius: 8px; font-weight: bold; font-size: 1rem; }
+        .drop-zone { min-height: 80px; background: rgba(255,255,255,0.03); border: 2px dashed var(--prim); border-radius: 12px; padding: 10px; margin: 15px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+        .word-chip { background: var(--prim); color: #000; padding: 10px 14px; border-radius: 8px; font-weight: bold; }
         .chip-p { background: var(--surf); border: 1px solid var(--prim); color: var(--text); }
 
         .rank-item { display: flex; justify-content: space-between; padding: 15px; background: var(--surf); margin-bottom: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .rank-me { border-color: var(--prim); background: rgba(255,183,77,0.05); }
 
+        .timer { font-size: 1.2rem; color: var(--prim); margin-bottom: 10px; font-weight: bold; }
+
         nav { background: var(--surf); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
         .nav-btn { opacity: 0.5; font-size: 0.8rem; text-align: center; flex: 1; cursor: pointer; }
         .nav-btn.active { opacity: 1; color: var(--prim); }
         
-        .main-action { width: 100%; padding: 18px; background: var(--prim); border: none; border-radius: 12px; font-weight: 800; font-size: 1.1rem; color: #000; margin-top: 15px; }
+        .main-action { width: 100%; padding: 18px; background: var(--prim); border: none; border-radius: 12px; font-weight: 800; color: #000; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -48,14 +52,32 @@
 
 <main>
     <section id="p-home" class="page active">
-        <h2 style="margin-bottom: 20px;">Омӯзиш</h2>
+        <h2 style="margin-bottom: 15px;">Выбор режима</h2>
+        <div class="card" onclick="App.game.sprint.start()">
+            <h3>⚡ Спринт</h3>
+            <p style="opacity: 0.6; font-size: 0.8rem;">Успей ответить за 30 секунд!</p>
+        </div>
         <div class="card" onclick="App.game.duels.start()">
             <h3>⚔️ Дуэли слов</h3>
-            <p style="opacity: 0.6; font-size: 0.8rem;">Изучи 500 самых важных слов</p>
+            <p style="opacity: 0.6; font-size: 0.8rem;">Найди правильный перевод</p>
         </div>
         <div class="card" onclick="App.game.build.start()">
             <h3>🧱 Сборщик фраз</h3>
-            <p style="opacity: 0.6; font-size: 0.8rem;">Составь 100 живых предложений</p>
+            <p style="opacity: 0.6; font-size: 0.8rem;">Собери предложение правильно</p>
+        </div>
+    </section>
+
+    <section id="g-sprint" class="page">
+        <div style="text-align: center;">
+            <div id="spr-time" class="timer">30s</div>
+            <div class="game-display">
+                <div id="spr-q" class="word-main">Нон</div>
+                <div id="spr-a" style="opacity: 0.7;">Хлеб</div>
+            </div>
+            <div class="grid-2">
+                <button class="btn-opt btn-no" onclick="App.game.sprint.check(false)">НЕВЕРНО</button>
+                <button class="btn-opt btn-yes" onclick="App.game.sprint.check(true)">ВЕРНО</button>
+            </div>
         </div>
     </section>
 
@@ -85,52 +107,43 @@
 <script>
 const App = {
     tg: window.Telegram.WebApp,
-    xp: parseInt(localStorage.getItem('user_xp_final')) || 0,
+    xp: parseInt(localStorage.getItem('user_xp_ultra')) || 0,
     
     db: {
-        // Здесь размещена структура на 500 слов (основные категории)
         words: [
-            // Семья и люди
-            {q:'Модар', a:'Мать'}, {q:'Падар', a:'Отец'}, {q:'Бародар', a:'Брат'}, {q:'Хоҳар', a:'Сестра'},
-            {q:'Дӯст', a:'Друг'}, {q:'Инсон', a:'Человек'}, {q:'Бача', a:'Мальчик'}, {q:'Духтар', a:'Девочка'},
-            // Быт и город
-            {q:'Хона', a:'Дом'}, {q:'Нон', a:'Хлеб'}, {q:'Об', a:'Вода'}, {q:'Шаҳр', a:'Город'},
-            {q:'Мактаб', a:'Школа'}, {q:'Китоб', a:'Книга'}, {q:'Қалам', a:'Карандаш'}, {q:'Миз', a:'Стол'},
-            // Природа и время
-            {q:'Осмон', a:'Небо'}, {q:'Замин', a:'Земля'}, {q:'Офтоб', a:'Солнце'}, {q:'Моҳ', a:'Луна'},
-            {q:'Рӯз', a:'День'}, {q:'Шаб', a:'Ночь'}, {q:'Вақт', a:'Время'}, {q:'Сол', a:'Год'},
-            // Глаголы и действия
-            {q:'Кор', a:'Работа'}, {q:'Хоб', a:'Сон'}, {q:'Рафтан', a:'Идти'}, {q:'Омадан', a:'Приходить'},
-            {q:'Гуфтан', a:'Говорить'}, {q:'Хурдан', a:'Есть'}, {q:'Нӯшидан', a:'Пить'}
-            // Примечание: Массив программно дополняется до 500 слов
+            {q:'Нон', a:'Хлеб'}, {q:'Об', a:'Вода'}, {q:'Китоб', a:'Книга'}, {q:'Хона', a:'Дом'},
+            {q:'Шаҳр', a:'Город'}, {q:'Дӯст', a:'Друг'}, {q:'Осмон', a:'Небо'}, {q:'Офтоб', a:'Солнце'},
+            {q:'Мактаб', a:'Школа'}, {q:'Дарахт', a:'Дерево'}, {q:'Зиндагӣ', a:'Жизнь'}, {q:'Вақт', a:'Время'},
+            {q:'Кор', a:'Работа'}, {q:'Даст', a:'Рука'}, {q:'Чашм', a:'Глаз'}, {q:'Дил', a:'Сердце'},
+            {q:'Замин', a:'Земля'}, {q:'Модар', a:'Мать'}, {q:'Падар', a:'Отец'}, {q:'Бародар', a:'Брат'},
+            {q:'Хоҳар', a:'Сестра'}, {q:'Шаб', a:'Ночь'}, {q:'Рӯз', a:'День'}, {q:'Ранг', a:'Цвет'},
+            {q:'Калон', a:'Большой'}, {q:'Хурд', a:'Маленький'}, {q:'Зебо', a:'Красивый'}, {q:'Гарм', a:'Горячий'}
+            // Сюда можно дописать остальные до 500
         ],
         phrases: [
-            {ru:'Как тебя зовут?', tg:['Номи', 'шумо', 'чист?']},
+            {ru:'Как дела?', tg:['Аҳволи', 'шумо', 'чист?']},
             {ru:'Я иду домой', tg:['Ман', 'ба', 'хона', 'меравам']},
-            {ru:'Где ты живешь?', tg:['Шумо', 'дар', 'куҷо', 'зиндагӣ', 'мекунед?']},
-            {ru:'Мне нужен хлеб', tg:['Ба', 'ман', 'нон', 'лозим', 'аст']},
-            {ru:'Мать читает книгу', tg:['Модар', 'китоб', 'мехонад']}
+            {ru:'Книга на столе', tg:['Китоб', 'дар', 'болои', 'миз', 'аст']},
+            {ru:'Я тебя люблю', tg:['Ман', 'шуморо', 'дӯст', 'медорам']}
         ],
-        bots: [
-            {n: 'Davron_Pro', x: 2550}, {n: 'Malika_Learn', x: 1980}, 
-            {n: 'Umed_99', x: 1420}, {n: 'Sitora_TJ', x: 950}
-        ]
+        bots: [{n: 'Davron', x: 2500}, {n: 'Malika', x: 2100}, {n: 'Umed', x: 1800}]
     },
 
     init() {
         this.tg.ready();
         this.tg.expand();
-        // Используем имя из профиля
-        document.getElementById('u-name').innerText = this.tg.initDataUnsafe?.user?.first_name || "Человек";
+        document.getElementById('u-name').innerText = this.tg.initDataUnsafe?.user?.first_name || "Мехмон";
         this.updateXP(0);
-        this.tg.BackButton.onClick(() => this.nav('p-home'));
+        this.tg.BackButton.onClick(() => {
+            if(App.game.sprint.timer) clearInterval(App.game.sprint.timer);
+            App.nav('p-home');
+        });
     },
 
     nav(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        
         if(id === 'p-home') {
             document.getElementById('n-home').classList.add('active');
             this.tg.BackButton.hide();
@@ -138,23 +151,20 @@ const App = {
             document.getElementById('n-rank').classList.add('active');
             this.tg.BackButton.show();
             this.renderRank();
-        } else {
-            this.tg.BackButton.show();
-        }
+        } else { this.tg.BackButton.show(); }
     },
 
     updateXP(v) {
         this.xp += v;
-        localStorage.setItem('user_xp_final', this.xp);
+        localStorage.setItem('user_xp_ultra', this.xp);
         document.getElementById('u-xp').innerText = this.xp;
     },
 
     renderRank() {
         const list = document.getElementById('rank-list');
         list.innerHTML = '';
-        const me = {n: (this.tg.initDataUnsafe?.user?.first_name || "Человек"), x: this.xp, isMe: true};
+        const me = {n: (this.tg.initDataUnsafe?.user?.first_name || "Я"), x: this.xp, isMe: true};
         const all = [...this.db.bots, me].sort((a,b) => b.x - a.x);
-        
         all.forEach((l, i) => {
             const item = document.createElement('div');
             item.className = `rank-item ${l.isMe ? 'rank-me' : ''}`;
@@ -164,62 +174,77 @@ const App = {
     },
 
     game: {
-        duels: {
-            pool: [],
+        sprint: {
+            timeLeft: 30, timer: null, curCorrect: false,
             start() {
-                this.pool = [...App.db.words].sort(() => Math.random() - 0.5);
-                App.nav('g-duels');
+                this.timeLeft = 30;
+                App.nav('g-sprint');
                 this.next();
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    document.getElementById('spr-time').innerText = this.timeLeft + 's';
+                    if(this.timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        App.tg.showAlert("Время вышло! Твой результат сохранен.");
+                        App.nav('p-home');
+                    }
+                }, 1000);
             },
             next() {
-                if(this.pool.length === 0) this.pool = [...App.db.words].sort(() => Math.random() - 0.5);
-                const cur = this.pool.pop();
-                const qDiv = document.getElementById('duel-q');
-                qDiv.innerText = cur.q;
-                qDiv.style.color = 'white';
-
-                let options = [cur.a];
-                while(options.length < 4 && options.length < App.db.words.length) {
-                    let r = App.db.words[Math.floor(Math.random()*App.db.words.length)].a;
-                    if(!options.includes(r)) options.push(r);
+                const isTrue = Math.random() > 0.5;
+                const word = App.db.words[Math.floor(Math.random()*App.db.words.length)];
+                document.getElementById('spr-q').innerText = word.q;
+                if(isTrue) {
+                    document.getElementById('spr-a').innerText = word.a;
+                    this.curCorrect = true;
+                } else {
+                    let randA = App.db.words[Math.floor(Math.random()*App.db.words.length)].a;
+                    while(randA === word.a) randA = App.db.words[Math.floor(Math.random()*App.db.words.length)].a;
+                    document.getElementById('spr-a').innerText = randA;
+                    this.curCorrect = false;
                 }
-                options.sort(() => Math.random() - 0.5);
-
-                const optDiv = document.getElementById('duel-opts');
-                optDiv.innerHTML = '';
-                options.forEach(o => {
+            },
+            check(userAns) {
+                if(userAns === this.curCorrect) {
+                    App.updateXP(15);
+                    App.tg.HapticFeedback.impactOccurred('light');
+                } else {
+                    App.tg.HapticFeedback.notificationOccurred('error');
+                }
+                this.next();
+            }
+        },
+        duels: {
+            start() { App.nav('g-duels'); this.next(); },
+            next() {
+                const cur = App.db.words[Math.floor(Math.random()*App.db.words.length)];
+                document.getElementById('duel-q').innerText = cur.q;
+                let opts = [cur.a];
+                while(opts.length < 4) {
+                    let r = App.db.words[Math.floor(Math.random()*App.db.words.length)].a;
+                    if(!opts.includes(r)) opts.push(r);
+                }
+                opts.sort(() => Math.random() - 0.5);
+                const cont = document.getElementById('duel-opts');
+                cont.innerHTML = '';
+                opts.forEach(o => {
                     const b = document.createElement('button');
                     b.className = 'btn-opt';
                     b.innerText = o;
                     b.onclick = () => {
-                        if(o === cur.a) {
-                            qDiv.style.color = 'var(--green)';
-                            App.updateXP(10);
-                            App.tg.HapticFeedback.impactOccurred('medium');
-                            setTimeout(() => this.next(), 400);
-                        } else {
-                            App.tg.HapticFeedback.notificationOccurred('error');
-                            b.style.background = 'var(--red)';
-                            setTimeout(() => b.style.background = 'var(--surf)', 400);
-                        }
+                        if(o === cur.a) { App.updateXP(10); App.tg.HapticFeedback.impactOccurred('medium'); this.next(); }
+                        else { App.tg.HapticFeedback.notificationOccurred('error'); b.style.borderColor = 'red'; }
                     };
-                    optDiv.appendChild(b);
+                    cont.appendChild(b);
                 });
             }
         },
         build: {
-            idx: 0,
-            chosen: [],
-            start() {
-                this.idx = Math.floor(Math.random() * App.db.phrases.length);
-                this.chosen = [];
-                App.nav('g-build');
-                this.render();
-            },
+            idx: 0, chosen: [],
+            start() { this.idx = Math.floor(Math.random()*App.db.phrases.length); this.chosen = []; App.nav('g-build'); this.render(); },
             render() {
                 const data = App.db.phrases[this.idx];
                 document.getElementById('build-task').innerText = data.ru;
-                
                 const target = document.getElementById('build-target');
                 target.innerHTML = '';
                 this.chosen.forEach((w, i) => {
@@ -229,16 +254,11 @@ const App = {
                     c.onclick = () => { this.chosen.splice(i, 1); this.render(); };
                     target.appendChild(c);
                 });
-
                 const pool = document.getElementById('build-pool');
                 pool.innerHTML = '';
                 let remain = [...data.tg];
-                this.chosen.forEach(cw => {
-                    let pos = remain.indexOf(cw);
-                    if(pos > -1) remain.splice(pos, 1);
-                });
-
-                remain.sort(() => 0.5 - Math.random()).forEach(w => {
+                this.chosen.forEach(cw => { let p = remain.indexOf(cw); if(p > -1) remain.splice(p, 1); });
+                remain.forEach(w => {
                     const c = document.createElement('div');
                     c.className = 'word-chip chip-p';
                     c.innerText = w;
@@ -249,15 +269,9 @@ const App = {
             check() {
                 const data = App.db.phrases[this.idx];
                 if(this.chosen.join(' ') === data.tg.join(' ')) {
-                    App.updateXP(25);
-                    App.tg.HapticFeedback.notificationOccurred('success');
-                    this.idx = (this.idx + 1) % App.db.phrases.length;
-                    this.chosen = [];
-                    this.render();
-                } else {
-                    App.tg.HapticFeedback.notificationOccurred('warning');
-                    App.tg.showAlert("Хато! Проверьте порядок слов.");
-                }
+                    App.updateXP(30); App.tg.HapticFeedback.notificationOccurred('success');
+                    this.start();
+                } else { alert("Хато!"); }
             }
         }
     }
