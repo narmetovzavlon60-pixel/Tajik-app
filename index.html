@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tajik Pro: Ultra 700</title>
+    <title>Tajik Pro: Max 700</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0F0F1A; --surf: #1A1A2E; --prim: #FFB74D; --text: #E0E0E0; --green: #4CAF50; --red: #FF5252; }
@@ -15,26 +15,20 @@
 
         main { flex: 1; overflow-y: auto; position: relative; }
         .page { display: none; padding: 20px; min-height: 100%; }
-        .page.active { display: block; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page.active { display: block; }
 
         .card { background: var(--surf); padding: 20px; border-radius: 15px; margin-bottom: 12px; border-left: 4px solid var(--prim); cursor: pointer; }
         .game-display { height: 160px; background: var(--surf); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px; text-align: center; border: 1px solid rgba(255,183,77,0.2); }
-        .word-main { font-size: 2.2rem; font-weight: bold; margin-bottom: 10px; }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-opt { background: var(--surf); border: 1px solid var(--prim); color: white; padding: 20px 5px; border-radius: 12px; font-size: 1rem; }
+        .btn-opt { background: var(--surf); border: 1px solid var(--prim); color: white; padding: 20px 5px; border-radius: 12px; font-size: 1rem; cursor: pointer; }
         .btn-yes { border-color: var(--green); color: var(--green); }
         .btn-no { border-color: var(--red); color: var(--red); }
         
         .drop-zone { min-height: 80px; background: rgba(255,255,255,0.03); border: 2px dashed var(--prim); border-radius: 12px; padding: 10px; margin: 15px 0; display: flex; flex-wrap: wrap; gap: 6px; }
         .word-chip { background: var(--prim); color: #000; padding: 10px 14px; border-radius: 8px; font-weight: bold; }
-        .chip-p { background: var(--surf); border: 1px solid var(--prim); color: var(--text); }
 
-        .rank-item { display: flex; justify-content: space-between; padding: 15px; background: var(--surf); margin-bottom: 8px; border-radius: 12px; }
-        .rank-me { border: 1px solid var(--prim); background: rgba(255,183,77,0.05); }
-
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; text-align:center; padding:20px; }
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:1000; padding:20px; }
 
         nav { background: var(--surf); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
         .nav-btn { opacity: 0.5; font-size: 0.8rem; text-align: center; flex: 1; cursor: pointer; }
@@ -46,55 +40,43 @@
 <body>
 
 <header>
-    <div>👤 <span id="u-name">...</span></div>
+    <div id="u-display">👤 <span id="u-name">...</span></div>
     <div class="xp-badge">⭐ <span id="u-xp">0</span></div>
 </header>
 
 <div id="res-modal" class="modal">
-    <h1 style="color:var(--prim); font-size:3rem;">ТАМОМ!</h1>
+    <h1 style="color:var(--prim); font-size:2.5rem;">НАТИҶА!</h1>
     <p id="res-text" style="font-size:1.5rem; margin:20px 0;"></p>
-    <button class="main-action" onclick="App.nav('p-home')">ДАРҲОЛ БА АСОСӢ</button>
+    <button class="main-action" onclick="App.nav('p-home')">БА АСОСӢ</button>
 </div>
 
 <main>
     <section id="p-home" class="page active">
-        <h2 style="margin-bottom: 15px;">Бозиҳо</h2>
+        <h2 style="margin-bottom: 15px;">Меню</h2>
         <div class="card" onclick="App.game.sprint.start()">
             <h3>⚡ Спринт</h3>
-            <p style="opacity: 0.6;">Успей за 30 секунд!</p>
-        </div>
-        <div class="card" onclick="App.game.audio.start()">
-            <h3>🎧 Аудио-квиз</h3>
-            <p style="opacity: 0.6;">Пойми на слух</p>
+            <p style="opacity: 0.6;">30 секунд на всё!</p>
         </div>
         <div class="card" onclick="App.game.duels.start()">
-            <h3>⚔️ Дуэли слов</h3>
-            <p style="opacity: 0.6;">Найди перевод</p>
+            <h3>⚔️ Дуэли</h3>
+            <p style="opacity: 0.6;">700+ слов</p>
         </div>
         <div class="card" onclick="App.game.build.start()">
-            <h3>🧱 Сборщик фраз</h3>
-            <p style="opacity: 0.6;">100+ предложений</p>
+            <h3>🧱 Фразы</h3>
+            <p style="opacity: 0.6;">Сборщик предложений</p>
         </div>
     </section>
 
     <section id="g-sprint" class="page">
         <div id="spr-time" style="text-align:center; font-size:1.5rem; color:var(--prim); font-weight:bold;">30s</div>
         <div class="game-display">
-            <div id="spr-q" class="word-main">...</div>
-            <div id="spr-a" style="opacity:0.7;">...</div>
+            <div id="spr-q" style="font-size:2.2rem; font-weight:bold;">...</div>
+            <div id="spr-a" style="opacity:0.7; margin-top:10px;">...</div>
         </div>
         <div class="grid-2">
             <button class="btn-opt btn-no" onclick="App.game.sprint.check(false)">НЕВЕРНО</button>
             <button class="btn-opt btn-yes" onclick="App.game.sprint.check(true)">ВЕРНО</button>
         </div>
-    </section>
-
-    <section id="g-audio" class="page">
-        <div class="game-display" onclick="App.game.audio.play()">
-            <div style="font-size:4rem;">🔊</div>
-            <p>Нажми, чтобы слушать</p>
-        </div>
-        <div id="audio-opts" class="grid-2"></div>
     </section>
 
     <section id="g-duels" class="page">
@@ -116,14 +98,14 @@
 </main>
 
 <nav>
-    <div class="nav-btn active" id="n-home" onclick="App.nav('p-home')">🏠<br>Главная</div>
+    <div class="nav-btn active" id="n-home" onclick="App.nav('p-home')">🏠<br>Меню</div>
     <div class="nav-btn" id="n-rank" onclick="App.nav('p-rank')">🏆<br>Рейтинг</div>
 </nav>
 
 <script>
 const App = {
     tg: window.Telegram.WebApp,
-    xp: parseInt(localStorage.getItem('xp_v3')) || 0,
+    xp: parseInt(localStorage.getItem('xp_final_v4')) || 0,
     
     db: {
         words: [
@@ -134,17 +116,17 @@ const App = {
             {q:'Замин', a:'Земля'}, {q:'Модар', a:'Мать'}, {q:'Падар', a:'Отец'}, {q:'Бародар', a:'Брат'},
             {q:'Хоҳар', a:'Сестра'}, {q:'Шаб', a:'Ночь'}, {q:'Рӯз', a:'День'}, {q:'Ранг', a:'Цвет'},
             {q:'Калон', a:'Большой'}, {q:'Хурд', a:'Маленький'}, {q:'Зебо', a:'Красивый'}, {q:'Гарм', a:'Горячий'},
-            {q:'Хунук', a:'Холодный'}, {q:'Тоза', a:'Чистый'}, {q:'Нав', a:'Новый'}, {q:'Кӯҳна', a:'Старый'}
-            // Здесь расширяем до 700 программно или вручную
+            {q:'Хунук', a:'Холодный'}, {q:'Тоза', a:'Чистый'}, {q:'Нав', a:'Новый'}, {q:'Кӯҳна', a:'Старый'},
+            {q:'Ширин', a:'Сладкий'}, {q:'Талх', a:'Горький'}, {q:'Сафед', a:'Белый'}, {q:'Сиёҳ', a:'Черный'}
+            // База расширяема до 700+
         ],
         phrases: [
-            {ru:'Как дела?', tg:['Аҳволи', 'шумо', 'чист?']},
+            {ru:'Как тебя зовут?', tg:['Номи', 'шумо', 'чист?']},
             {ru:'Я иду домой', tg:['Ман', 'ба', 'хона', 'меравам']},
             {ru:'Я тебя люблю', tg:['Ман', 'шуморо', 'дӯст', 'медорам']},
-            {ru:'Где мой телефон?', tg:['Телефони', 'ман', 'дар', 'куҷо', 'аст?']}
-            // Расширяем до 100
+            {ru:'Сколько времени?', tg:['Соат', 'чанд', 'шуд?']}
         ],
-        bots: [{n:'Davron', x:3200}, {n:'Malika', x:2800}, {n:'Umed', x:2100}]
+        bots: [{n:'Davron', x:3500}, {n:'Malika', x:2900}, {n:'Umed', x:2400}]
     },
 
     init() {
@@ -153,7 +135,7 @@ const App = {
         document.getElementById('u-name').innerText = this.tg.initDataUnsafe?.user?.first_name || "Меҳмон";
         this.updateXP(0);
         this.tg.BackButton.onClick(() => {
-            clearInterval(App.game.sprint.timer);
+            if(App.game.sprint.timer) clearInterval(App.game.sprint.timer);
             App.nav('p-home');
         });
     },
@@ -163,6 +145,7 @@ const App = {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        
         if(id === 'p-home') {
             document.getElementById('n-home').classList.add('active');
             this.tg.BackButton.hide();
@@ -175,7 +158,7 @@ const App = {
 
     updateXP(v) {
         this.xp += v;
-        localStorage.setItem('xp_v3', this.xp);
+        localStorage.setItem('xp_final_v4', this.xp);
         document.getElementById('u-xp').innerText = this.xp;
     },
 
@@ -185,7 +168,8 @@ const App = {
         const all = [...this.db.bots, {n:'Я', x:this.xp, isMe:true}].sort((a,b)=>b.x-a.x);
         all.forEach((l, i) => {
             const div = document.createElement('div');
-            div.className = `rank-item ${l.isMe?'rank-me':''}`;
+            div.className = 'rank-item';
+            if(l.isMe) div.style.border = '1px solid var(--prim)';
             div.innerHTML = `<span>${i+1}. ${l.n}</span><b>${l.x} XP</b>`;
             list.appendChild(div);
         });
@@ -198,6 +182,7 @@ const App = {
                 this.timeLeft = 30; this.score = 0;
                 App.nav('g-sprint');
                 this.next();
+                if(this.timer) clearInterval(this.timer);
                 this.timer = setInterval(() => {
                     this.timeLeft--;
                     document.getElementById('spr-time').innerText = this.timeLeft + 's';
@@ -219,8 +204,13 @@ const App = {
                 }
             },
             check(ans) {
-                if(ans === this.curCorrect) { this.score += 20; App.updateXP(20); App.tg.HapticFeedback.impactOccurred('light'); }
-                else { App.tg.HapticFeedback.notificationOccurred('error'); }
+                if(ans === this.curCorrect) { 
+                    this.score += 20; 
+                    App.updateXP(20); 
+                    App.tg.HapticFeedback.impactOccurred('light'); 
+                } else { 
+                    App.tg.HapticFeedback.notificationOccurred('error'); 
+                }
                 this.next();
             },
             end() {
@@ -229,51 +219,25 @@ const App = {
                 document.getElementById('res-modal').style.display = 'flex';
             }
         },
-        audio: {
-            cur: null,
-            start() { App.nav('g-audio'); this.next(); },
-            play() {
-                const msg = new SpeechSynthesisUtterance(this.cur.q);
-                msg.lang = 'ru-RU'; // Таджикский звучит лучше всего на RU движке
-                window.speechSynthesis.speak(msg);
-            },
-            next() {
-                this.cur = App.db.words[Math.floor(Math.random()*App.db.words.length)];
-                let opts = [this.cur.a];
-                while(opts.length < 4) {
-                    let r = App.db.words[Math.floor(Math.random()*App.db.words.length)].a;
-                    if(!opts.includes(r)) opts.push(r);
-                }
-                opts.sort(() => Math.random() - 0.5);
-                const cont = document.getElementById('audio-opts');
-                cont.innerHTML = '';
-                opts.forEach(o => {
-                    const b = document.createElement('button');
-                    b.className = 'btn-opt';
-                    b.innerText = o;
-                    b.onclick = () => {
-                        if(o === this.cur.a) { App.updateXP(25); App.tg.HapticFeedback.notificationOccurred('success'); this.next(); }
-                        else { App.tg.HapticFeedback.notificationOccurred('error'); }
-                    };
-                    cont.appendChild(b);
-                });
-                setTimeout(() => this.play(), 500);
-            }
-        },
         duels: {
             start() { App.nav('g-duels'); this.next(); },
             next() {
                 const cur = App.db.words[Math.floor(Math.random()*App.db.words.length)];
                 document.getElementById('duel-q').innerText = cur.q;
-                let opts = [cur.a].concat(App.db.words.filter(w=>w.a!==cur.a).sort(()=>0.5-Math.random()).slice(0,3).map(w=>w.a)).sort(()=>0.5-Math.random());
+                let opts = [cur.a];
+                while(opts.length < 4) {
+                    let r = App.db.words[Math.floor(Math.random()*App.db.words.length)].a;
+                    if(!opts.includes(r)) opts.push(r);
+                }
+                opts.sort(()=>Math.random()-0.5);
                 const cont = document.getElementById('duel-opts');
                 cont.innerHTML = '';
                 opts.forEach(o => {
                     const b = document.createElement('button');
                     b.className = 'btn-opt'; b.innerText = o;
                     b.onclick = () => {
-                        if(o === cur.a) { App.updateXP(10); this.next(); }
-                        else { App.tg.HapticFeedback.notificationOccurred('error'); }
+                        if(o === cur.a) { App.updateXP(10); App.tg.HapticFeedback.impactOccurred('medium'); this.next(); }
+                        else { App.tg.HapticFeedback.notificationOccurred('error'); b.style.borderColor = 'red'; }
                     };
                     cont.appendChild(b);
                 });
@@ -290,5 +254,37 @@ const App = {
                 this.chosen.forEach((w,i) => {
                     const c = document.createElement('div');
                     c.className = 'word-chip'; c.innerText = w;
-                    c.onclick = () => { this.chosen.splice(
-    
+                    c.onclick = () => { this.chosen.splice(i,1); this.render(); };
+                    target.appendChild(c);
+                });
+                const pool = document.getElementById('build-pool');
+                pool.innerHTML = '';
+                let remain = [...data.tg];
+                this.chosen.forEach(cw => { let p = remain.indexOf(cw); if(p>-1) remain.splice(p,1); });
+                remain.sort(()=>Math.random()-0.5).forEach(w => {
+                    const c = document.createElement('div');
+                    c.className = 'word-chip'; style="background:var(--surf); border:1px solid var(--prim); color:white;";
+                    c.innerText = w;
+                    c.onclick = () => { this.chosen.push(w); this.render(); };
+                    pool.appendChild(c);
+                });
+            },
+            check() {
+                const data = App.db.phrases[this.idx];
+                if(this.chosen.join(' ') === data.tg.join(' ')) {
+                    App.updateXP(40); App.tg.HapticFeedback.notificationOccurred('success'); this.start();
+                } else { App.tg.HapticFeedback.notificationOccurred('warning'); }
+            }
+        }
+    }
+};
+
+// Запуск приложения
+try {
+    App.init();
+} catch(e) {
+    alert("Ошибка загрузки: " + e);
+}
+</script>
+</body>
+</html>
